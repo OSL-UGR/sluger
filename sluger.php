@@ -1,14 +1,16 @@
-<?
+<?php
 
 /*
+
 Copyright 2009 Allan Psicobyte
 
 sluger es una aplicación de la Oficina de Software Libre (http://osl.ugr.es/) de la Universidad de Granada (http://www.ugr.es/) que permite crear atajos con URLs cortas y redireccionar al usuario a través de ellas (smilar a servicios como tinyurl o ATAJA).
 
 Es software libre y se distribuye bajo una licencia Affero (AFFERO GENERAL PUBLIC LICENSE: http://www.affero.org/oagpl.html).
 This program is free software and it's licensed under the AFFERO GENERAL PUBLIC LICENSE (http://www.affero.org/oagpl.html).
-*/
 
+
+*/
 Init();
 
 if ($_GET["esp"]=='JASON' || $_GET["modo"]=='JASON'){
@@ -24,11 +26,14 @@ if ($_GET["modo"]=='go' && $_GET["url"] != ''){
             Logea($_GET["url"]);
             Redirecciona($url);
         }
+
         else {
             MuestraError($url);
         }
+
     }
     else {
+
         $url= Buscar_por_id($_GET["url"]);
         if (!preg_match('"^ERROR:"',$url)){
             Logea($_GET["url"]);
@@ -40,6 +45,7 @@ if ($_GET["modo"]=='go' && $_GET["url"] != ''){
         }
     }
 }
+
 
 
 elseif (($_GET["modo"]=='new' || $_GET["modo"]=='JASON') && $_GET["url"]!= ''){
@@ -56,6 +62,7 @@ elseif (($_GET["modo"]=='new' || $_GET["modo"]=='JASON') && $_GET["url"]!= ''){
                 }
             }
             else {
+
                 $url= Crear($_GET["url"]);
                 if (!preg_match('"^ERROR:"',$url)){
                     Pantallamuestra($url);
@@ -75,8 +82,10 @@ elseif (($_GET["modo"]=='new' || $_GET["modo"]=='JASON') && $_GET["url"]!= ''){
     }
 }
 
+
 elseif($_GET["modo"]=='stats') {
     Estadistica($_GET["url"]);
+
 }
 
 else {
@@ -90,6 +99,7 @@ else {
 }
 
 
+
 function Init(){
     global $Conexion, $N, $Caracteres;
 
@@ -98,9 +108,11 @@ function Init(){
     $N= count($Caracteres);
 
     // Editar aquí los datos de usuario Y contraseña para la Base de Datos.
-    $Conexion = mysql_connect("localhost","USUARIO","CONTRASEÑA");
+    $Conexion = mysql_connect("localhost","","");
     mysql_select_db ("sluger", $Conexion) OR die ("No se puede conectar");
+
 }
+
 
 
 //Pequeño validador de URLs
@@ -129,10 +141,13 @@ function TestAutoreferencia($url){
 }
 
 
+
 // Para testear que no se usan caracteres no permitidos en las URLs cortas definidas por el usuario.
 function TestCaracteres($id){
     return !preg_match('"[^a-z0-9A-Z_]"',$id);
 }
+
+
 
 
 // Crea una URL corta automática. El usuario sólo debe indicar la URL destino
@@ -140,10 +155,11 @@ function Crear($url){
     global $Conexion;
 
     if (!TestURL($url)){
-        $url= 'http://'. $url;
+    $url= 'http://'. $url;
     }
 
     $escapada= mysql_real_escape_string($url);
+
 
     $sql="SELECT * FROM direcciones WHERE url='".$escapada."';";
     $result=mysql_query($sql,$Conexion);
@@ -159,6 +175,7 @@ function Crear($url){
         if (!preg_match('"^ERROR:"',$URL_corta)){
             return $URL_corta;
         }
+
     }
     else {
 
@@ -188,6 +205,7 @@ function Crear($url){
         }
     }
 }
+
 
 
 // Pasa de formato numérico a cadena de caracteres, para convertir ids de la BD en cadenas para la URL.
@@ -229,10 +247,12 @@ function Cad_Num($cad){
 
     $Caracter= str_split($cad);
 
+
     $RegExp= implode('', $Caracteres);
     $RegExp= "^[". $RegExp ."]*$";
 
     if (ereg($RegExp,$cad) && (strlen($cad)==4)){
+
 
     $Valor[0]= array_keys($Caracteres, $Caracter[0]);
     $Valor[1]= array_keys($Caracteres, $Caracter[1]);
@@ -241,7 +261,9 @@ function Cad_Num($cad){
 
     $numero = $N3 * ($Valor[0][0]) + $N2 * ($Valor[1][0]) + $N * ($Valor[2][0]) + $Valor[3][0];
 
+
         return $numero;
+
     }
     else {
         return 'ERROR:inválido';
@@ -269,6 +291,7 @@ function Muestra($id){
         if (!preg_match('"^ERROR:"',$URL_corta)){
             return $URL_corta;
         }
+
     }
     else {
         return 'ERROR:noexiste';
@@ -280,9 +303,12 @@ function Muestra($id){
 function Buscar_por_id($id){
     global $Conexion;
 
+
     $escapada= Cad_Num($id);
 
+
     if (preg_match('"^ERROR:"',$escapada)) {
+
         return 'ERROR:inválido';
     }
     else {
@@ -294,6 +320,7 @@ function Buscar_por_id($id){
         }
         mysql_free_result($result);
         if ($url!=''){
+
             return $url;
         }
         else {
@@ -307,34 +334,38 @@ function Buscar_por_id($id){
 function Buscar_por_id_propia($id){
     global $Conexion;
 
-    $escapada= mysql_real_escape_string($id);
+        $escapada= mysql_real_escape_string($id);
 
-    $sql="SELECT * FROM elegidas WHERE id='".$escapada."';";
-    $result=mysql_query($sql,$Conexion);
+        $sql="SELECT * FROM elegidas WHERE id='".$escapada."';";
+        $result=mysql_query($sql,$Conexion);
 
-    while($row = mysql_fetch_array($result)) {
-        $url=$row["url"];
-    }
-    mysql_free_result($result);
+        while($row = mysql_fetch_array($result)) {
+            $url=$row["url"];
+        }
+        mysql_free_result($result);
+        if ($url!=''){
 
-    if ($url!=''){
-        return $url;
-    }
-    else {
-        return 'ERROR:noexiste';
-    }
+            return $url;
+        }
+        else {
+            return 'ERROR:noexiste';
+        }
 }
+
+
+
 
 
 // Guarda un log de accesos
 function Logea($id){
     global $Conexion;
-
     $fecha= date("Y-m-d H:i:s");
     $refer= $_SERVER['HTTP_REFERER'];
     $sql="INSERT INTO log (idpag, fecha, refer) VALUES ('".$id."','".$fecha."','".$refer."');";
     $result=mysql_query($sql,$Conexion);
     $SQL_Error=  mysql_error();
+
+
 }
 
 
@@ -344,17 +375,24 @@ function Redirecciona($url){
 }
 
 
+
 // Formulario para crear URLs
 function Pantallacrea(){
+
 
     //Si no existe o no encuentra la plantilla, muestra una página por defecto
     if (!@include("template/form.html")){
         echo '<html><head><title>Short URL</title></head><p>Introduzca la URL que desea acortar:</p><form action=""><input type="hidden" name="modo" value="new"><p>URL: <input type="text" name="url" value=""></p><p>Tambi&eacute;n puede elegir un mombre corto (ID)</p><p>ID: <input type="text" name="myid" value=""> (<em>opcional</em>)</p><input class="boton" type="submit" name="submit" value="Crear"></form><body></body></html>';
     }
+
+
+
 }
 
 
-// Filtro para permitir o bloquear ciertas IPs (bsado en listas blanca y negra.
+
+// Esto es una exigencia del "cliente": Permite dar de alta direcciones sólo a IPs de la UGR (más o menos).
+// Está comentada para que no de guerra.
 function FiltraIP(){
 
     if  (WhiteList() && !BlackList()){
@@ -386,9 +424,9 @@ function BlackList(){
 
             if (preg_match('/^.{1,3}\..{1,3}\..{1,3}\..{1,3}\z/', $patron)){
 
-                if (ComparaIP($ip,$patron)){
-                    return true;
-                }
+                    if (ComparaIP($ip,$patron)){
+                        return true;
+                    }
             }
         }
 
@@ -421,13 +459,14 @@ function WhiteList(){
 
             if (preg_match('/^.{1,3}\..{1,3}\..{1,3}\..{1,3}\z/', $patron)){
 
-                if (ComparaIP($ip,$patron)){
-                    return true;
-                }
+                    if (ComparaIP($ip,$patron)){
+                        return true;
+                    }
             }
         }
 
         return false;
+
     }
     else {
         return true;
@@ -454,6 +493,8 @@ function ComparaIP($ip,$patron){
 function Pantallamuestra($id){
     global $Especial;
 
+
+
 if ($Especial=='JASON'){
         MuestraJASON($id,'1','URL Creada');
     }
@@ -463,7 +504,9 @@ if ($Especial=='JASON'){
             echo '<html><head><title>Short URL</title></head><p>Se ha creado la URL corta '. $_SERVER['HTTP_HOST'] . '/' . $id  .'</p><body></body></html>';
         }
     }
+
 }
+
 
 
 //Under construction: Módulo de estadísticas de uso
@@ -472,6 +515,7 @@ function Estadistica($id){
 
     $lista= array();
     $escapada= mysql_real_escape_string($id);
+
 
     if (strlen($id)==4){
         $num= Cad_Num($id);
@@ -486,6 +530,7 @@ function Estadistica($id){
                 if ($SQL_Error!=''){
                     //echo $SQL_Error;
                 }
+
 
             mysql_free_result($result);
             if ($creada==''){
@@ -531,6 +576,7 @@ function Estadistica($id){
     else {
         MuestraError($Error);
         }
+
 }
 
 
@@ -538,9 +584,11 @@ function Estadistica($id){
 function CreaPropia($id,$url){
     global $Conexion;
 
+
     if (!TestURL($url)){
         $url= 'http://'. $url;
     }
+
 
     if ((strlen($id) > 4) && (strlen($id) < 51)){
 
@@ -572,16 +620,20 @@ function CreaPropia($id,$url){
                 else {
                     return $id;
                 }
+
             }
         }
         else {
             return 'ERROR:caracteres';
         }
+
     }
     else{
         return 'ERROR:tamaño';
     }
+
 }
+
 
 
 // Pantallas de Errores
@@ -604,6 +656,10 @@ function MuestraError($Iderror){
 }
 
 
+
+
+
+
 function MuestraJASON($id,$error,$texto){
 
     if ($id!=''){
@@ -615,10 +671,14 @@ function MuestraJASON($id,$error,$texto){
 }
 
 
+
+
 // Pantallas de Estadísticas
 function MuestraStats($visitas,$lista,$creada){
     global $Tabla;
     $Tabla= '<table class="stats"><tr><th>URL</th><th>Visitas</th></tr>' ."\n";
+
+
 
     foreach($lista as $key => $val) {
 
@@ -637,6 +697,7 @@ function MuestraStats($visitas,$lista,$creada){
             echo $Tabla;
             echo '</body></html>';
         }
+
 }
 
 ?>

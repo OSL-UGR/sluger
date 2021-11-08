@@ -2,24 +2,27 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es" lang="es">
 <head>
 <title>Short URL</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 <meta name="author" content="" />
 <meta name="description" content="Genrador de URLs cortas por la Oficina de Software Libre de la Universidad de Granada" />
 <meta name="keywords" content="short url uri corta" />
-<link href="template/estilo.css" rel="STYLESHEET" media="screen" type="text/css" />
+<link href="estilo.css" rel="STYLESHEET" media="screen" type="text/css" />
 <link rel="shortcut icon" href="http://osl.ugr.es/favicon.ico" />
 </head>
 <body>
-<div id="centro" class="contenedor">
+<div id="centro" class="largo">
 <p>Se ha creado la URL corta<br />
 <?php echo '<a href="http://'. $_SERVER['HTTP_HOST'] . '/' .  $id .'">' . $_SERVER['HTTP_HOST'] . '/' .  $id . '</a>'; ?></p>
 <form action="">
 <?php echo '<input type="text" name="" value="http://'. $_SERVER['HTTP_HOST'] . '/' .  $id .'">'; ?>
 </form>
+
+<div><a href="<?php echo 'http://' . $_SERVER['HTTP_HOST'] . '/' .  $id; ?>" title="<?php echo 'http://' . $_SERVER['HTTP_HOST'] . '/' .  $id; ?>"><img style="border:none;" src="http://chart.apis.google.com/chart?chs=150x150&cht=qr&chl=<?php echo 'http://' . $_SERVER['HTTP_HOST'] . '/' .  $id; ?>&choe=UTF-8" alt="<?php echo 'http://' . $_SERVER['HTTP_HOST'] . '/' .  $id; ?>"/></a></div>
+
 <?php echo '<p>(Puedes consultar las estad&iacute;sticas de uso en <a href="http://sl.ugr.es/stats/' . $id . '">sl.ugr.es/stats/' . $id . '</a>)</p>'; ?>
 </div>
-<div class="navega">
-<p><a href=".">Inicio</a> | <a href="template/ayuda.html">Ayuda</a> | <a href="template/api.html">API</a> | <a href="template/licencia.html">Licencia</a></p>
+<div class="navegayuda">
+<p><a href=".">Inicio</a> | <a href="ayuda.html">Ayuda</a> | <a href="api.html">API</a> | <a href="licencia.html">Licencia</a></p>
 </div>
 </body>
 </html>
